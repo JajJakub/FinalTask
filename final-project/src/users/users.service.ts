@@ -27,7 +27,25 @@ export class UsersService {
     return this.userModel.findById(userId);
   }
 
+  getUserByUsername(username: string) {
+    return this.userModel
+      .findOne(
+        {
+          username: username,
+        },
+        '-__v',
+      )
+      .lean();
+  }
+
   updateUser(userId: string, dto: UpdateUserDto) {
     return this.userModel.findByIdAndUpdate(userId, dto, { new: true });
+  }
+
+  async checkIfInDB(username: string, email: string): Promise<boolean> {
+    const exists = await this.userModel.exists({
+      $or: [{ username: username }, { email: email }],
+    });
+    return !!exists;
   }
 }
