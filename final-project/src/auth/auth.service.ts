@@ -28,9 +28,7 @@ export class AuthService {
     }
 
     const user = await this.usersService.createUser(userDto);
-    const { password, ...result } = JSON.parse(
-      JSON.stringify(user, (key, value) => (key === '__v' ? undefined : value)),
-    );
+    const { password, ...result } = JSON.parse(JSON.stringify(user));
 
     return {
       ...result,
@@ -41,18 +39,18 @@ export class AuthService {
   async validateUser(userDto: LoginUserDto) {
     const user = await this.usersService
       .getUserByUsername(userDto.username)
-      .lean();
+      .select('+password');
 
     if (user && (await bcrypt.compare(userDto.password, user.password))) {
-      return user;
+      const { password, ...result } = user;
+      return result;
     }
     return null;
   }
 
   async loginUser(user: FlattenMaps<UserEntity> & { _id: string }) {
-    const { password, ...result } = user;
     return {
-      ...result,
+      ...user,
       access_token: await this.createJwt(user._id, user.username),
     };
   }

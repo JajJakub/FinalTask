@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import * as process from 'process';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
-import { PostsModule } from './posts/posts.module';
+import { RecipesModule } from './recipes/recipes.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
@@ -14,7 +14,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     MongooseModule.forRoot(process.env.DATABASE),
     UsersModule,
-    PostsModule,
+    RecipesModule,
     AuthModule,
   ],
 })

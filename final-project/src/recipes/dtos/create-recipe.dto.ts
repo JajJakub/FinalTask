@@ -1,8 +1,15 @@
-import { IsArray, IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IngredientListDto } from './ingredient-list.dto';
+import { CuisineType } from '../../enums/cuisine-type.enum';
 
-export class CreatePostDto {
+export class CreateRecipeDto {
   @ApiProperty({
     description: 'Author ID',
     example: '665bbb952e37f243604a59ba',
@@ -20,6 +27,14 @@ export class CreatePostDto {
   @MaxLength(128)
   @IsNotEmpty()
   name: string;
+
+  @ApiProperty({
+    description: 'Cuisine type',
+    example: 'italian',
+  })
+  @IsEnum(CuisineType)
+  @IsNotEmpty()
+  cuisine: CuisineType;
 
   @ApiProperty({
     description: 'Ingredients list',
