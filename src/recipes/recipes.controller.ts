@@ -14,11 +14,12 @@ import { isNumber } from '@nestjs/common/utils/shared.utils';
 import { UniversalIdDto } from '../dtos/universal-id.dto';
 import { AddCommentDto } from './dtos/add-comment.dto';
 
-@UseGuards(JwtAuthGuard)
+
 @Controller('recipes')
 export class RecipesController {
   constructor(private readonly recipesService: RecipesService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post('addRecipe')
   async addRecipe(@Body(ValidationPipe) recipeDto: CreateRecipeDto) {
     try {
@@ -33,6 +34,7 @@ export class RecipesController {
     return this.recipesService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('/addComment')
   async addComment(@Body(ValidationPipe) addCommentDto: AddCommentDto) {
     try {
@@ -45,7 +47,7 @@ export class RecipesController {
   @Post('search')
   async findRecipe(@Body() recipeId: UniversalIdDto) {
     if (!recipeId || isNumber(recipeId))
-      throw new BadRequestException('Recipe ID is required as string!');
+      throw new BadRequestException('Recipe ID has to be a string');
 
     try {
       return this.recipesService.findRecipeById(recipeId);
