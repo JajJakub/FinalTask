@@ -13,6 +13,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { isNumber } from '@nestjs/common/utils/shared.utils';
 import { UniversalIdDto } from '../dtos/universal-id.dto';
 import { AddCommentDto } from './dtos/add-comment.dto';
+import {SearchRecipeDto} from "./dtos/search-recipe.dto";
 
 
 @Controller('recipes')
@@ -20,7 +21,7 @@ export class RecipesController {
   constructor(private readonly recipesService: RecipesService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Post('addRecipe')
+  @Post('/addRecipe')
   async addRecipe(@Body(ValidationPipe) recipeDto: CreateRecipeDto) {
     try {
       return await this.recipesService.createRecipe(recipeDto);
@@ -29,7 +30,7 @@ export class RecipesController {
     }
   }
 
-  @Get('all')
+  @Get('/all')
   getAll() {
     return this.recipesService.findAll();
   }
@@ -44,13 +45,22 @@ export class RecipesController {
     }
   }
 
-  @Post('search')
-  async findRecipe(@Body() recipeId: UniversalIdDto) {
+  @Post('/getById')
+  async findRecipe(@Body(ValidationPipe) recipeId: UniversalIdDto) {
     if (!recipeId || isNumber(recipeId))
       throw new BadRequestException('Recipe ID has to be a string');
 
     try {
       return this.recipesService.findRecipeById(recipeId);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Post('/search')
+  async search(@Body(ValidationPipe) searchDto: SearchRecipeDto ) {
+    try {
+      return this.recipesService.findRecipes(searchDto.name, searchDto.cuisine, searchDto.difficulty);
     } catch (error) {
       throw error;
     }

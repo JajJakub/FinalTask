@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IngredientListDto } from './ingredient-list.dto';
-import { CuisineType } from '../../enums/cuisine-type.enum';
+import {CuisineType, DifficultyType} from '../../enums/cuisine-type.enum';
 
 export class CreateRecipeDto {
   @ApiProperty({
@@ -37,6 +37,14 @@ export class CreateRecipeDto {
   cuisine: CuisineType;
 
   @ApiProperty({
+    description: 'Difficulty',
+    example: 'hard',
+  })
+  @IsEnum(DifficultyType)
+  @IsNotEmpty()
+  difficulty: DifficultyType;
+
+  @ApiProperty({
     description: 'Ingredients list',
     example: [
       { product: 'apple', quantity: 3, measureType: 'piece' },
@@ -51,10 +59,10 @@ export class CreateRecipeDto {
     description: 'How to prepare dish (steps)',
     example: ['Step 1', 'Step 2', 'Step 3'],
   })
-  @IsArray()
-  @IsString({ each: true })
+
+  @IsString()
   @IsNotEmpty()
-  steps: string[];
+  steps: string;
 
   @ApiProperty({
     description: 'Url to dish images',

@@ -78,4 +78,25 @@ export class RecipesService {
   findAll() {
     return this.recipeModel.find().lean();
   }
+
+  async findRecipes(searchString:string, cuisine:string, difficulty:string ){
+    try {
+      const query: any = {};
+
+      if (searchString && searchString.length>0) {
+        query.name = { $regex: searchString, $options: 'i' };
+      }
+      if (cuisine && cuisine.length>0 && cuisine!='all') {
+        query.cuisine = cuisine;
+      }
+      if (difficulty && difficulty.length>0 && difficulty!='all') {
+        query.difficulty = difficulty;
+      }
+
+      return await this.recipeModel.find(query);
+    } catch (error){
+      throw error
+    }
+  }
+
 }
