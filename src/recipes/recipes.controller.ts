@@ -10,10 +10,10 @@ import {
 import { RecipesService } from './recipes.service';
 import { CreateRecipeDto } from './dtos/create-recipe.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { isNumber } from '@nestjs/common/utils/shared.utils';
 import { UniversalIdDto } from '../dtos/universal-id.dto';
 import { AddCommentDto } from './dtos/add-comment.dto';
 import {SearchRecipeDto} from "./dtos/search-recipe.dto";
+import {Types} from "mongoose";
 
 
 @Controller('recipes')
@@ -47,8 +47,8 @@ export class RecipesController {
 
   @Post('/getById')
   async findRecipe(@Body(ValidationPipe) recipeId: UniversalIdDto) {
-    if (!recipeId || isNumber(recipeId))
-      throw new BadRequestException('Recipe ID has to be a string');
+    if (!Types.ObjectId.isValid(recipeId.id))
+      throw new BadRequestException('Invalid user ID');
 
     try {
       return this.recipesService.findRecipeById(recipeId);
@@ -63,6 +63,19 @@ export class RecipesController {
       return this.recipesService.findRecipes(searchDto.name, searchDto.cuisine, searchDto.difficulty);
     } catch (error) {
       throw error;
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/userRecipes')
+  async getUserRecipes(@Body(ValidationPipe) userId:UniversalIdDto){
+    if (!Types.ObjectId.isValid(userId.id))
+      throw new BadRequestException('Invalid user ID');
+
+    try {
+      return this.recipesService.findUserRecipes(userId.id)
+    } catch (error){
+      throw error
     }
   }
 }

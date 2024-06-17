@@ -46,15 +46,11 @@ export class RecipesService {
       throw new BadRequestException('There is no recipe with this ID');
 
     try {
-      await recipe
-        .updateOne({
-          $push: {
-            comments: commentDto,
-          },
-        })
-        .lean();
+      return await this.recipeModel.findOneAndUpdate( {_id: recipe.id}, {$push:{
+          comments:commentDto
+        }}, {new: true, lean: true}
+      )
 
-      return recipe;
     } catch (error) {
       throw error;
     }
@@ -94,6 +90,17 @@ export class RecipesService {
       }
 
       return await this.recipeModel.find(query);
+    } catch (error){
+      throw error
+    }
+  }
+
+  async  findUserRecipes (userId:string){
+    try {
+      const user = await this.userModel.findById(userId).populate('recipes').lean()
+      if (!user) throw new BadRequestException("User with this ID does not exists!")
+
+      return user.recipes
     } catch (error){
       throw error
     }
